@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'; // Import next/router instead of ne
 import { AiOutlineClose } from 'react-icons/ai';
 import Link from 'next/link';
 import { auth } from '../firebase';
+import { useAuth } from '../context/Page';
 
 function SignUpModal() {
   const [email, setEmail] = useState('');
@@ -18,10 +19,8 @@ function SignUpModal() {
     e.preventDefault();
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // Signed in
         const user = userCredential.user;
 
-        // Update the user's display name
         updateDisplayName(user, displayName);
         setUser(user);
 
@@ -35,20 +34,17 @@ function SignUpModal() {
   };
 
   const updateDisplayName = (user, displayName) => {
-    // You can update the user's display name using the updateProfile function
     updateProfile(user, { displayName: displayName })
       .then(() => {
-        // Display name updated successfully
       })
       .catch((error) => {
-        // Handle any errors that occur during the update
         console.error(error);
       });
   };
 
   return (
     <div className="bg-gray-200 min-h-screen flex items-center justify-center">
-      <div className="bg-white w-full max-w-sm mx-4 rounded-lg shadow-lg p-8">
+      <div className="bg-white w-full max-w-sm mx-4  rounded-lg shadow-lg p-8">
         <h2 className="text-2xl font-semibold mb-4">Sign Up</h2>
         <div className="mb-4">
           <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -102,6 +98,7 @@ function SignUpModal() {
           <AiOutlineClose />
         </div>
       </Link>
+      <div className='text-center text-xs absolute bottom-28 '>signed up? <Link href='/tire' className='text-blue-600 hover:underline'>sign in</Link> </div>
     </div>
   );
 }

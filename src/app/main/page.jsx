@@ -54,14 +54,15 @@ export default function Main() {
           time: doc.data().time,
           category: doc.data().category,
         }));
-
-        if (tasks.length === 0) {
-          console.log('No tasks available');
-        }
-  
+      
+        console.log('Tasks fetched:', tasks);
+      
+      
         const groupedTasks = groupTasksByDate(tasks);
+
         setTaskGroups(groupedTasks);
       };
+      
   
       fetchTasks();
     }
@@ -155,7 +156,7 @@ export default function Main() {
     try {
       const taskRef = doc(db, 'tasks', taskId);
       await setDoc(taskRef, { completed: false }, { merge: true });
-
+  
       setTaskGroups((prevGroups) => {
         const updatedGroups = { ...prevGroups };
         for (const dateKey in updatedGroups) {
@@ -172,7 +173,7 @@ export default function Main() {
       console.error('Error repeating task: ', error);
     }
   };
-
+  
   const handleDeleteTask = async (taskId) => {
     try {
       await deleteDoc(doc(db, 'tasks', taskId));
@@ -196,11 +197,12 @@ export default function Main() {
       console.error('Error deleting task: ', error);
     }
   };
+  
   const handleCompleteTask = async (taskId) => {
     try {
       const taskRef = doc(db, 'tasks', taskId);
       await setDoc(taskRef, { completed: true }, { merge: true });
-
+  
       setTaskGroups((prevGroups) => {
         const updatedGroups = { ...prevGroups };
         for (const dateKey in updatedGroups) {
@@ -217,13 +219,15 @@ export default function Main() {
       console.error('Error completing task: ', error);
     }
   };
+  ;
 
   return (
     <div className={`w-full min-h-screen ${isNightTheme ? 'bg-gradient-to-br from-purple-950 to-blue-950' : 'bg-gradient-to-br from-purple-200 to-blue-300'}`}>
     <div className={`flex justify-between items-center px-4 py-3   shadow-lg ${isNightTheme ? 'bg-gradient-to-br from-purple-900 to-blue-950' : 'bg-white'}`}>
       <div className="flex items-center space-x-2">
         <Image src={pic} alt="pics" width={30} height={30} />
-        <h1 className="text-2xl font-semibold">Welcome {user ? (user.displayName || 'Guest') : 'Guest'}</h1>
+        <h1 className="text-2xl ">Welcome <span className='font-semibold'> {user ? (user.displayName || 'Guest') : 'Guest'}</span></h1>
+        
 
 
 
@@ -359,6 +363,7 @@ export default function Main() {
         updateTaskGroups={updateTaskGroups} 
         onClose={closeTask}
         onAddTask={handleTask}
+        user={user}
       />
     )}
   </div>

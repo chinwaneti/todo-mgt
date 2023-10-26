@@ -9,39 +9,37 @@ import 'react-datepicker/dist/react-datepicker.css';
 import {  AiOutlineClose } from "react-icons/ai";
 import { getFirestore } from 'firebase/firestore'; 
 
-const NewTaskModal = ({ isOpen, onClose }) => {
+const NewTaskModal = ({ isOpen, onClose, updateTaskGroups, user }) => {
   const [taskDescription, setTaskDescription] = useState('');
   const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState("All"); 
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
   const closeTask = () => {
-    onClose()
+    onClose();
   };
 
-  const db = getFirestore(); 
+  const db = getFirestore();
 
   const handleAddTask = async () => {
-    if (taskDescription.trim() === '' || selectedDate === null) {
-      return;
-    }
+    if (user && taskDescription) { 
+      try {
+        const taskData = {
+          description: taskDescription,
+          date: selectedDate,
+          category: selectedCategory,
+          userId: user.uid, 
+        };
 
-    try {
-      const tasksCollection = collection(db, 'tasks');
-
-      await addDoc(tasksCollection, {
-        description: taskDescription,
-        date: selectedDate,
-        category: selectedCategory, 
-      });
-
-      setTaskDescription('');
-      setSelectedDate(null);
-
-      onClose();
-    } catch (error) {
-      console.error('Error adding task: ', error);
+        const docRef = await addDoc(collection(db, 'tasks'), taskData);
+        const addedTask = { id: docRef.id, ...taskData };
+        updateTaskGroups(addedTask);
+      } catch (error) {
+        console.error('Error adding task:', error);
+      }
+      closeTask();
     }
   };
+  
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
