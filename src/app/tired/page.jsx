@@ -17,6 +17,7 @@ function SignUpModal() {
   
   const handleSignUp = (e) => {
     e.preventDefault();
+    setErrorMessage('')
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;

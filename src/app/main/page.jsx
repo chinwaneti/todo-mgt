@@ -2,13 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import pic from '../images/logo.png';
-import { FaPlus } from 'react-icons/fa';
+import { FaBed, FaPlus, FaUtensils } from 'react-icons/fa';
 import { BsCircle, BsTrash } from 'react-icons/bs';
 import Link from 'next/link';
 // import ProfileModal from '../components/ProfileModal';
 import NewTaskModal from '../components/NewTaskModal';
 import { collection, query, orderBy, getDocs,  where, deleteDoc, doc, setDoc } from 'firebase/firestore'; 
 import { db } from '../firebase'; 
+import {FiSun} from "react-icons/fi"
+import {WiSunrise} from "react-icons/wi"
 import { FaArrowRotateRight} from 'react-icons/fa6';
 import { FaSun, FaMoon } from 'react-icons/fa'; // Import the icons from react-icons
 import { useAuth } from '../context/Page';
@@ -145,7 +147,7 @@ export default function Main() {
   };
 
   const handleSignInSuccess = (user) => {
-    setUserId(user.uid); // Set userId when the user signs in
+    setUserId(user.uid); 
     closeModal();
   };
 
@@ -219,14 +221,49 @@ export default function Main() {
       console.error('Error completing task: ', error);
     }
   };
-  ;
+  
+  const getGreeting = () => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    let greeting = 'Welcome';
+
+    if (currentHour >= 5 && currentHour < 12) {
+      greeting = 'Good morning';
+      const sunSet = <WiSunrise size={24} color='yellow'/>
+    } else if (currentHour >= 12 && currentHour < 18) {
+      
+      greeting = 'Good afternoon ';
+      const lunchIcon = <FiSun size={24} color="#FFA500" />;
+      greeting = (
+        <span className='flex items-center space-x-4'>
+           {greeting} <span className='ml-3'>{lunchIcon}</span>  
+        </span>
+      );
+    } else if (currentHour >= 18) {
+      greeting = 'Good evening';
+      const bedIcon = <FaMoon  size={24} color="#FFA500" />
+      greeting= (
+        <span>
+          {greeting} {bedIcon}
+        </span>
+      )
+    }
+
+    return greeting;
+  };
 
   return (
     <div className={`w-full min-h-screen ${isNightTheme ? 'bg-gradient-to-br from-purple-950 to-blue-950' : 'bg-gradient-to-br from-purple-200 to-blue-300'}`}>
     <div className={`flex justify-between items-center px-4 py-3   shadow-lg ${isNightTheme ? 'bg-gradient-to-br from-purple-900 to-blue-950' : 'bg-white'}`}>
       <div className="flex items-center space-x-2">
         <Image src={pic} alt="pics" width={30} height={30} />
-        <h1 className="text-2xl ">Welcome <span className='font-semibold'> {user ? (user.displayName || 'Guest') : 'Guest'}</span></h1>
+        <h1 className="text-2xl flex">
+            {user ? (
+              <span className='font-semibold flex'>
+                 {user.displayName || 'Guest'}<span className='ml-2'>{getGreeting() }</span>
+              </span>
+            ) : 'Guest'}
+          </h1>
         
 
 

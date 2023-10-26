@@ -1,42 +1,52 @@
 "use client"
-
+import { useAuth } from '../context/Page';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { AiOutlineClose } from 'react-icons/ai';
 import Link from 'next/link';
 import { auth } from '../firebase';
 
-function SignInModal({onClose}) {
+function SignInModal({ onClose }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const router = useRouter(); // Initialize the useRouter hook
+  const router = useRouter();
+  const { setUser } = useAuth(); 
 
+  const handleClose = () => {
+    onClose();
+  };
 
-  const handleClose = ()=>{
-    onclose()
-  }
-  
-  
-  
-const handleSignIn = (e) => {
- e.preventDefault();
-signInWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    // Signed in 
-    const user = userCredential.user;
-    console.log(userCredential)
-    router.push('/main'); 
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    
-    setErrorMessage(errorMessage)
+  const handleSignIn = (e) => {
+    e.preventDefault();
+    setErrorMessage('')
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        updateDisplayName(user, displayName);
+        setUser(user); 
+        console.log(userCredential);
+        router.push('/main');
+      })
+      .catch((error) => {
+         if (error.code === '400 (Bad Request)') {
+          setErrorMessage('Email or Password error.');
+        } else {
+          setErrorMessage('email or Password error!');
+        }
+      });
+  };
 
-  });
-};
+  const updateDisplayName = (user, displayName) => {
+    updateProfile(user, { displayName: displayName })
+      .then(() => {
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   
 
@@ -73,6 +83,19 @@ signInWithEmailAndPassword(auth, email, password)
             placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="displayName" className="block text-sm font-medium text-gray-700">
+            Display Name
+          </label>
+          <input
+            type="text"
+            id="displayName"
+            className="w-full mt-1 py-2 px-3 border rounded-lg border-gray-300 focus:ring focus:ring-indigo-200 focus:outline-none"
+            placeholder="Enter your display name"
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
           />
         </div>
         <div onClick={handleClose} className='absolute top-1 right-1 hover:bg-gray-100 p-2 rounded-full'>
