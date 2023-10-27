@@ -228,8 +228,12 @@ export default function Main() {
     let greeting = 'Welcome';
 
     if (currentHour >= 5 && currentHour < 12) {
-      greeting = 'Good morning';
       const sunSet = <WiSunrise size={24} color='yellow'/>
+      greeting = (
+        <span className='flex items-center space-x-4'>
+           {greeting} <span className='ml-3'>{sunSet}</span>  
+        </span>
+      );
     } else if (currentHour >= 12 && currentHour < 18) {
       
       greeting = 'Good afternoon ';
@@ -243,7 +247,7 @@ export default function Main() {
       greeting = 'Good evening';
       const bedIcon = <FaMoon  size={24} color="#FFA500" />
       greeting= (
-        <span>
+        <span className='flex items-center space-x-4'>
           {greeting} {bedIcon}
         </span>
       )
